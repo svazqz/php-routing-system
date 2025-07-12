@@ -15,14 +15,25 @@
 
 ## Installation
 
-**PHP-RoutingSystem** requires PHP 5.3+ and its only dependencies (at this moment) are defined in the *composer.json* file.
-You just need to define the *public* folder as the root of your site and thats all you need to start working with this framework... well and run:
+**PHP-RoutingSystem** requires PHP 7+ and its only dependencies (at this moment) are defined in the *composer.json* file.
+You just need to define the *public* folder as the root of your site if you are using apache (intructions for nginx will be added) and thats all you need to start working with this framework... well and run:
 
 ```shell
 composer install
 ```
 
 To download all the dependencies.
+
+### Using docker compose
+If you are using docker compose you can simply run:
+```shell
+docker compose up -d
+```
+
+And your app will be running on:
+```
+URL_ADDRESS:8000
+```
 
 ## Configuration
 
@@ -46,40 +57,15 @@ If you want to place more configurations you have to define them inside your own
 Drivers\Config::get()->var("section.var", "default");
 ```
 
-### Friendly URLs
-
-#### Apache
-```
-#.htaccess
-<IfModule mod_rewrite.c>
-	Options -MultiViews
-	Options +FollowSymLinks
-	RewriteEngine On
-</IfModule>
-
-<IfModule mod_rewrite.c>
-	ReWriteBase /
-	RewriteRule ^static - [L]
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(.*)$ index.php?$1 [L]
-</IfModule>
-```
-
-#### Nginx
-
-Pending...
-
 ## URL Mapping
 
 In **PHP-RoutingSystem** every url will be mapped to a controller following the next patterns:
 
 ### Common controllers
 - http://yourdomain.com/ (default controller, main method)
-
-- http://yourdomain.com/controller1 (controller1, main method)
-- http://yourdomain.com/controller1/method1 (controller1, method1)
-- http://yourdomain.com/controller/method/arg1/arg2/... (controller1, method1 with args)
+- http://yourdomain.com/controller (controller, main method)
+- http://yourdomain.com/controller/method (controller, method)
+- http://yourdomain.com/controller/method/arg1/arg2/... (controller, method with args)
 
 ### API controllers
 
@@ -96,6 +82,17 @@ The way that an url is mapped for API controllers is made using the word "api" o
 * http://yourdomain.com/api/controller1/arg1/arg2 (Access to API Controller1 on the corresponding method that is related with the HTTP verb used for the request, passing the args as parammeters for that method)
 
 ## Controllers
+
+### Custom routes
+In both API controllers as well as common controllers, you can define your own custom routes. To do this you have to add the following code to your controller constructor:
+```php
+public function __construct() {
+    $this->__ROUTES__ = array(
+        "/api/blog/post/:id" => "getPostData"
+    );
+}
+```
+This will map the url "/api/blog/post/:id" to the method "getPostData" in the controller. And all the defined args will be passed as parameters for that method.
 
 ### Common
 

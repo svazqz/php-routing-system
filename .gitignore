@@ -7,3 +7,5 @@
 /app/templates/cache
 config.ini
 /html
+.DS_Store
+
