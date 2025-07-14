@@ -39,16 +39,31 @@ URL_ADDRESS:8000
 
 ### Configuration file
 
-**PHP-RoutingSystem** uses a mechanisms named *Drivers* (located in core/drivers) to add functionalities to your app. So the configuration must be managed by the *Driver* named **Config.php**. Te configuration driver will load your configuration from "config.ini", file that must be placed in the root of the project, and basically must contain:
+**PHP-RoutingSystem** uses a mechanisms named *Drivers* (located in core/drivers) to add functionalities to your app. So the configuration must be managed by the *Driver* named **Config.php**. Te configuration driver will load your configuration from "config.ini", file that must be placed in the root of the project.
+
+You can copy `config.sample.ini` to `config.ini` and customize it for your environment. The configuration file should contain:
 
 ```
 [defaults]
-controller = ""
-[db]
-host = ""
-user = ""
-password = ""
-name = ""
+controller = "Home"
+method = "main"
+
+[database]
+; Eloquent ORM settings
+driver = "mysql"
+host = "localhost"
+port = 3306
+database = "your_database_name"
+username = "your_username"
+password = "your_password"
+charset = "utf8mb4"
+collation = "utf8mb4_unicode_ci"
+prefix = ""
+
+[app]
+debug = false
+timezone = "UTC"
+environment = "production"
 ```
 
 If you want to place more configurations you have to define them inside your own section, and they can be accessed:
@@ -210,19 +225,114 @@ $mView->homePage();
 
 ## Models
 
-All the models must be placed in *app/models* and work with *php-activerecord* library.
+All the models must be placed in *app/models* and work with **Eloquent ORM** (Laravel's database ORM).
 
-An example of this classes could be the model for "users" table (following the php-activerecord conventions) in your database. And it would be:
+### Creating Models
+
+All models should extend the framework's base `Model` class which provides Eloquent functionality. An example model for a "users" table would be:
 
 ```php
 <?php
 
-namespace Models;
+use Core\Classes\Model;
 
-use ActiveRecord;
+class User extends Model
+{
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'users';
 
-class User extends ActiveRecord\Model {
+    /**
+     * The attributes that are mass assignable.
+     */
+    protected $fillable = [
+        'name', 'email', 'password'
+    ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     */
+    protected $hidden = [
+        'password', 'remember_token'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime'
+    ];
+}
+```
+
+### Using Models
+
+You can use all standard Eloquent methods:
+
+```php
+// Create a new user
+$user = User::create([
+    'name' => 'John Doe',
+    'email' => 'john@example.com'
+]);
+
+// Find a user by ID
+$user = User::find(1);
+$user = User::findOrFail(1);
+
+// Query users
+$users = User::where('active', 1)->get();
+$user = User::where('email', 'john@example.com')->first();
+
+// Update a user
+$user = User::find(1);
+$user->update(['name' => 'Jane Doe']);
+
+// Delete a user
+$user = User::find(1);
+$user->delete();
+```
+
+### Framework Helper Methods
+
+The base Model class also provides some framework-specific helper methods:
+
+```php
+// Get all records with optional pagination
+$users = User::getAll();
+$users = User::getAll(10, 1); // 10 per page, page 1
+
+// Create, update, delete with helper methods
+$user = User::createRecord(['name' => 'John', 'email' => 'john@example.com']);
+$user = User::updateRecord(1, ['name' => 'Jane']);
+User::deleteRecord(1);
+```
+
+### Relationships
+
+Eloquent supports all standard relationships:
+
+```php
+class User extends Model
+{
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+}
+
+class Post extends Model
+{
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
 ```
 

@@ -8,7 +8,7 @@ class Config {
 	}
 
 	public function __clone() {
-		trigger_error('Clone no se permite.', E_USER_ERROR);
+		throw new \Error('Clone no se permite.');
 	}
 
 	public static function get() {

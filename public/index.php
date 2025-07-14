@@ -7,6 +7,9 @@ $whoops = new Whoops\Run();
 $whoops->pushHandler(new Whoops\Handler\PrettyPageHandler());
 $whoops->register();
 
+// Initialize Eloquent ORM
+Core\Providers\EloquentServiceProvider::initialize();
+
 $container = new Core\Container();
 
 $runnableData = parseURIAndComponents();

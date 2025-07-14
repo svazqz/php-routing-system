@@ -3,6 +3,7 @@
         "psr-4": {
             "": "core/drivers",
             "Core\\": "core/classes",
+            "Core\\Providers\\": "core/providers",
             "Handlers\\": "core/handlers",
             "Interfaces\\": "core/interfaces",
             "Models\\": "app/models",
@@ -17,12 +18,21 @@
             "core/drivers/DB.php",
             "core/drivers/Input.php",
             "core/drivers/Session.php",
-            "core/drivers/View.php"
+            "core/drivers/View.php",
+            "app/models/"
         ]
     },
     "require": {
         "filp/whoops": "2.*",
-        "twig/twig": "~1.20|~2.0",
-        "guzzlehttp/guzzle": "^7.0"
+        "twig/twig": "^3.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "illuminate/database": "^12.20",
+        "illuminate/events": "^12.20"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0",
+        "mockery/mockery": "^1.5",
+        "fakerphp/faker": "^1.20",
+        "vlucas/phpdotenv": "^5.4"
     }
 }

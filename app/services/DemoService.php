@@ -54,7 +54,7 @@ class DemoService {
         }
     }
 
-    public function getComments(int $postId = null)
+    public function getComments(?int $postId = null)
     {
         try {
             $url = $this->baseUrl . '/comments';

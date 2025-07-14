@@ -1,6 +1,12 @@
 <?php
 namespace Drivers;
 
+use Core\Providers\EloquentServiceProvider;
+use PDO;
+use PDOException;
+use Exception;
+use stdClass;
+
 class DB {
 	private $n = 0;
 	private static $dbm = null;
@@ -143,6 +149,38 @@ class DB {
 		}
 		self::close();
 
+	}
+
+	/**
+	 * Get Eloquent database connection
+	 * This provides access to the Eloquent ORM connection
+	 */
+	public static function getEloquentConnection($name = null) {
+		return EloquentServiceProvider::getConnection($name);
+	}
+
+	/**
+	 * Get Eloquent Capsule instance
+	 * This provides access to the full Eloquent functionality
+	 */
+	public static function getEloquentCapsule() {
+		return EloquentServiceProvider::getCapsule();
+	}
+
+	/**
+	 * Execute raw query using Eloquent connection
+	 * This is a bridge method for using Eloquent's query builder
+	 */
+	public static function eloquentQuery($query, $bindings = []) {
+		return EloquentServiceProvider::getConnection()->select($query, $bindings);
+	}
+
+	/**
+	 * Get Eloquent query builder instance
+	 * This provides access to Eloquent's fluent query builder
+	 */
+	public static function table($table) {
+		return EloquentServiceProvider::getConnection()->table($table);
 	}
 
 }
