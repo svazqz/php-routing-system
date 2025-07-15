@@ -4,7 +4,7 @@ class Config {
 	private static $instance = null;
 	private $config = null;
 	private function __construct() {
-		$this->config = parse_ini_file("config.ini",true);
+		$this->config = parse_ini_file("config.ini", true);
 	}
 
 	public function __clone() {
