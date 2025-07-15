@@ -1,0 +1,40 @@
+FROM php:8.4-cli
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    sqlite3 \
+    libsqlite3-dev \
+    default-mysql-client \
+    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring xml
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy application code first
+COPY . .
+
+# Install all dependencies for testing
+RUN composer install --optimize-autoloader
+
+# Create necessary directories
+RUN mkdir -p /var/www/html/storage/logs \
+    && chmod -R 755 /var/www/html/storage
+
+# Set proper permissions
+RUN chown -R www-data:www-data /var/www/html
+
+# Expose port for web server (if needed for integration tests)
+EXPOSE 8000
+
+# Default command
+CMD ["php", "-v"]

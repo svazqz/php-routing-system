@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  composer:
+    image: composer:2.5
+    command: install
+    volumes:
+      - ../..:/app
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/prod/Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ../..:/var/www
+      - ../../public:/var/www/html
+      - ./config.prod.ini:/var/www/config.ini
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+      - TZ=America/Mexico_City
+    restart: unless-stopped

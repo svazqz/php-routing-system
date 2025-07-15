@@ -15,7 +15,7 @@ fi
 
 # Run all tests
 echo "Running all tests..."
-./vendor/bin/phpunit --no-coverage
+docker-compose -f infra/test/docker-compose.test.yml exec php ./vendor/bin/phpunit --no-coverage
 echo ""
 
 # Run specific test suites

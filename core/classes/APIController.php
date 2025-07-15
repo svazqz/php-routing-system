@@ -50,6 +50,15 @@ abstract class APIController {
     return;
   }
 
+  /**
+   * Send a JSON response with optional status code
+   */
+  protected function jsonResponse($data, $statusCode = 200) {
+    http_response_code($statusCode);
+    header('Content-Type: application/json');
+    return $data;
+  }
+
   public function show() {
     echo "Executed GET";
   }

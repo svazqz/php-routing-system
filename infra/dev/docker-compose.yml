@@ -5,14 +5,17 @@ services:
     image: composer:2.5
     command: install
     volumes:
-      - .:/app
+      - ../..:/app
   web:
-    build: .
+    build:
+      context: ../..
+      dockerfile: infra/prod/Dockerfile
     ports:
       - "8000:80"
     volumes:
-      - .:/var/www
-      - ./public:/var/www/html
+      - ../..:/var/www
+      - ../../public:/var/www/html
+      - ./config.dev.ini:/var/www/config.ini
     environment:
       - APACHE_DOCUMENT_ROOT=/var/www/html
       - TZ=America/Mexico_City

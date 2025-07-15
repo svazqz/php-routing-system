@@ -1,0 +1,158 @@
+#!/bin/bash
+
+# Commander - Project management script for PHP Routing System
+
+set -e
+
+command="$1"
+subcommand="$2"
+
+case "$command" in
+    "run")
+        case "$subcommand" in
+            "test")
+                echo "Running unit tests in isolated container..."
+                # Install dependencies if vendor doesn't exist
+                if [ ! -d "vendor" ]; then
+                    echo "Installing dependencies..."
+                    php composer.phar install
+                fi
+                
+                # Build test image
+                echo "Building test container..."
+                docker build -f infra/test/Dockerfile.test -t php-routing-test .
+                
+                # Run unit tests in container
+                echo "Running unit tests..."
+                docker run --rm \
+                    -v "$(pwd):/var/www/html:ro" \
+                    -w /tmp/test-workspace \
+                    php-routing-test \
+                    sh -c "cp -r /var/www/html/* /tmp/test-workspace/ && cp /var/www/html/infra/test/config.test.ini /tmp/test-workspace/config.ini && cd /tmp/test-workspace && ./vendor/bin/phpunit --testsuite=Unit,Feature,Integration --no-coverage"
+                
+                echo "Unit tests completed!"
+                ;;
+            "test-e2e")
+                echo "Running E2E tests with temporary containers..."
+                # Install dependencies if vendor doesn't exist
+                if [ ! -d "vendor" ]; then
+                    echo "Installing dependencies..."
+                    php composer.phar install
+                fi
+                
+                # Build test image
+                echo "Building E2E test container..."
+                docker build -f infra/test-e2e/Dockerfile.test -t php-routing-e2e .
+                
+                # Create network for E2E tests
+                echo "Creating network for E2E tests..."
+                docker network create e2e-test-network || true
+                
+                # Start MySQL container for E2E tests
+                echo "Starting MySQL container for E2E tests..."
+                docker run -d --name mysql-e2e-temp \
+                    --network e2e-test-network \
+                    -e MYSQL_ROOT_PASSWORD=password \
+                    -e MYSQL_DATABASE=php_routing_e2e \
+                    -e MYSQL_USER=testuser \
+                    -e MYSQL_PASSWORD=testpass \
+                    -p 3307:3306 \
+                    -v "$(pwd)/database/init:/docker-entrypoint-initdb.d" \
+                    mysql:8.0
+                
+                # Wait for MySQL to be ready with health check
+                echo "Waiting for MySQL to be ready..."
+                until docker exec mysql-e2e-temp mysqladmin ping -h localhost --silent; do
+                    echo "Waiting for MySQL..."
+                    sleep 2
+                done
+                echo "MySQL is ready!"
+                
+                # Start web server container
+                echo "Starting web server for E2E tests..."
+                docker run -d --name web-e2e-temp \
+                    --network e2e-test-network \
+                    -v "$(pwd):/var/www/html:ro" \
+                    -w /tmp/web-workspace \
+                    -p 8081:8000 \
+                    php-routing-e2e \
+                    sh -c "cp -r /var/www/html/* /tmp/web-workspace/ && cp /var/www/html/infra/test-e2e/config.e2e.ini /tmp/web-workspace/config.ini && cd /tmp/web-workspace && php -S 0.0.0.0:8000 -t public"
+                
+                # Wait for web server to be ready
+                echo "Waiting for web server to be ready..."
+                sleep 5
+                
+                # Run E2E tests
+                echo "Running E2E tests..."
+                docker run --rm \
+                    --network e2e-test-network \
+                    -v "$(pwd):/var/www/html:ro" \
+                    -w /tmp/test-workspace \
+                    php-routing-e2e \
+                    sh -c "cp -r /var/www/html/* /tmp/test-workspace/ && cp /var/www/html/infra/test-e2e/config.e2e.ini /tmp/test-workspace/config.ini && cd /tmp/test-workspace && ./vendor/bin/phpunit --testsuite=E2E --no-coverage"
+                
+                # Clean up containers and network
+                echo "Cleaning up E2E test containers..."
+                docker stop web-e2e-temp mysql-e2e-temp || true
+                docker rm web-e2e-temp mysql-e2e-temp || true
+                docker network rm e2e-test-network || true
+                
+                echo "E2E tests completed!"
+                ;;
+            "dev")
+                echo "Starting development environment..."
+                # Install dependencies if vendor doesn't exist
+                if [ ! -d "vendor" ]; then
+                    echo "Installing dependencies..."
+                    php composer.phar install
+                fi
+                
+                echo "Starting development containers..."
+                docker-compose -f infra/dev/docker-compose.yml up -d
+                
+                echo "Development environment is ready!"
+                echo "Access the application at: http://localhost:8000"
+                ;;
+            *)
+                echo "Usage: commander run [test|dev]"
+                exit 1
+                ;;
+        esac
+        ;;
+    "stop")
+        case "$subcommand" in
+            "dev")
+                echo "Stopping development containers..."
+                docker-compose -f infra/dev/docker-compose.yml down
+                echo "Development containers stopped."
+                ;;
+            *)
+                echo "Usage: commander stop [test|dev]"
+                exit 1
+                ;;
+        esac
+        ;;
+    "deploy")
+        echo "Deploying to production..."
+        ./cli/deploy.sh
+        echo "Production deployment completed!"
+        ;;
+    "migrate")
+        echo "Running database migrations..."
+        php cli/migrate.php
+        echo "Database migrations completed!"
+        ;;
+    *)
+        echo "PHP Routing System Commander"
+        echo ""
+        echo "Usage:"
+        echo "  commander run test     - Run unit tests in isolated container"
+        echo "  commander run test-e2e - Run E2E tests with temporary containers"
+        echo "  commander run dev      - Start development environment"
+        echo "  commander stop dev     - Stop development containers"
+        echo "  commander deploy       - Deploy to production"
+        echo "  commander migrate      - Run database migrations"
+        echo ""
+        exit 1
+        ;;
+esac

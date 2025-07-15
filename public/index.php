@@ -1,5 +1,5 @@
 <?php
-chdir("..");
+chdir(dirname(__DIR__));
 require getcwd() . '/vendor/autoload.php';
 require getcwd() . '/core/utils.php';
 
