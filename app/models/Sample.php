@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class Sample extends Model
 {
@@ -61,4 +63,22 @@ class Sample extends Model
     // {
     //     return $query->where('active', 1);
     // }
+
+    /**
+     * Create the samples table in memory (for demonstration)
+     */
+    public static function createTable()
+    {
+        $schema = Capsule::schema();
+        
+        if (!$schema->hasTable('samples')) {
+            $schema->create('samples', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email');
+                $table->text('description')->nullable();
+                $table->timestamps();
+            });
+        }
+    }
 }

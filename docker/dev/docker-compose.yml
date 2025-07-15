@@ -11,7 +11,7 @@ services:
       context: ../..
       dockerfile: docker/prod/Dockerfile
     ports:
-      - "8000:80"
+      - "8080:80"
     volumes:
       - ../..:/var/www
       - ../../public:/var/www/html
