@@ -2,8 +2,14 @@
 
 function parseURIAndComponents() {
   $URI = $_SERVER['REQUEST_URI'];
-  $URI = parse_url('http://phproutingsystem.com'.$URI);
-  $URI = str_replace("/index.php", "", $URI["path"]);
+  $parsedURI = parse_url('http://phproutingsystem.com'.$URI);
+  
+  // Preserve query string and populate $_GET if it exists
+  if (isset($parsedURI['query'])) {
+    parse_str($parsedURI['query'], $_GET);
+  }
+  
+  $URI = str_replace("/index.php", "", $parsedURI["path"]);
   $URI = str_replace("index.php", "", $URI);
   $originalURI = $URI;
   $URI = str_replace("/", " ", $URI);

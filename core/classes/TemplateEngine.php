@@ -15,6 +15,8 @@ class TemplateEngine {
         }
 		$twig = new \Twig\Environment($loader);
 		header('Content-Type: '.$type.'; charset=utf-8');
+		// Ensure $data is always an array for Twig
+		$data = is_array($data) ? $data : [];
 		$twig->display($template, $data);
 	}
 }
