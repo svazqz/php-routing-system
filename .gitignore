@@ -8,4 +8,9 @@
 config.ini
 /html
 .DS_Store
-
+.phpunit.cache/
+/test/cli
+/test/core
+/test/commander
+/test/composer.json
+/test/public/index.php
