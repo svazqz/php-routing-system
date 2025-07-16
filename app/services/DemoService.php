@@ -5,9 +5,10 @@ namespace Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Core\Providers\EloquentServiceProvider;
-use Blog;
-use Sample;
+use Models\Blog;
+use Models\Sample;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Carbon\Carbon;
 
 class DemoService {
     private Client $client;
@@ -134,7 +135,7 @@ class DemoService {
                 'title' => $data['title'] ?? '',
                 'content' => $data['content'] ?? '',
                 'author' => $data['author'] ?? 'Anonymous',
-                'published_at' => $data['published_at'] ?? now()
+                'published_at' => $data['published_at'] ?? Carbon::now()
             ]);
             return $post->toArray();
         } catch (\Exception $e) {

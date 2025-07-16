@@ -5,6 +5,7 @@ namespace Tests\Unit\App\Models;
 use TestCase;
 use Core\Providers\EloquentServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
+use Models\Sample;
 
 class SampleTest extends TestCase
 {
@@ -72,28 +73,28 @@ class SampleTest extends TestCase
 
     public function testSampleModelExtendsEloquentModel()
     {
-        $sample = new \Sample();
+        $sample = new Sample();
         
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Model::class, $sample);
     }
 
     public function testSampleModelHasCorrectTableName()
     {
-        $sample = new \Sample();
+        $sample = new Sample();
         
         $this->assertEquals('samples', $sample->getTable());
     }
 
     public function testSampleModelHasCorrectPrimaryKey()
     {
-        $sample = new \Sample();
+        $sample = new Sample();
         
         $this->assertEquals('id', $sample->getKeyName());
     }
 
     public function testSampleModelHasTimestamps()
     {
-        $sample = new \Sample();
+        $sample = new Sample();
         
         $this->assertTrue($sample->usesTimestamps());
     }
@@ -106,9 +107,9 @@ class SampleTest extends TestCase
             'description' => 'This is a test sample'
         ];
         
-        $sample = \Sample::create($data);
+        $sample = Sample::create($data);
         
-        $this->assertInstanceOf(\Sample::class, $sample);
+        $this->assertInstanceOf(Sample::class, $sample);
         $this->assertEquals('Test Sample', $sample->name);
         $this->assertEquals('test@example.com', $sample->email);
         $this->assertEquals('This is a test sample', $sample->description);
@@ -118,15 +119,15 @@ class SampleTest extends TestCase
     public function testFindSampleById()
     {
         // Create a sample first
-        $sample = \Sample::create([
+        $sample = Sample::create([
             'name' => 'Find Test',
             'email' => 'find@example.com'
         ]);
         
         // Find it by ID
-        $foundSample = \Sample::find($sample->id);
+        $foundSample = Sample::find($sample->id);
         
-        $this->assertInstanceOf(\Sample::class, $foundSample);
+        $this->assertInstanceOf(Sample::class, $foundSample);
         $this->assertEquals($sample->id, $foundSample->id);
         $this->assertEquals('Find Test', $foundSample->name);
     }
@@ -134,7 +135,7 @@ class SampleTest extends TestCase
     public function testUpdateSampleRecord()
     {
         // Create a sample first
-        $sample = \Sample::create([
+        $sample = Sample::create([
             'name' => 'Update Test',
             'email' => 'update@example.com'
         ]);
@@ -155,7 +156,7 @@ class SampleTest extends TestCase
     public function testDeleteSampleRecord()
     {
         // Create a sample first
-        $sample = \Sample::create([
+        $sample = Sample::create([
             'name' => 'Delete Test',
             'email' => 'delete@example.com'
         ]);
@@ -168,18 +169,18 @@ class SampleTest extends TestCase
         $this->assertTrue($result);
         
         // Verify it's deleted
-        $deletedSample = \Sample::find($sampleId);
+        $deletedSample = Sample::find($sampleId);
         $this->assertNull($deletedSample);
     }
 
     public function testGetAllSamples()
     {
         // Create multiple samples
-        \Sample::create(['name' => 'Sample 1', 'email' => 'sample1@example.com']);
-        \Sample::create(['name' => 'Sample 2', 'email' => 'sample2@example.com']);
-        \Sample::create(['name' => 'Sample 3', 'email' => 'sample3@example.com']);
+        Sample::create(['name' => 'Sample 1', 'email' => 'sample1@example.com']);
+        Sample::create(['name' => 'Sample 2', 'email' => 'sample2@example.com']);
+        Sample::create(['name' => 'Sample 3', 'email' => 'sample3@example.com']);
         
-        $allSamples = \Sample::all();
+        $allSamples = Sample::all();
         
         $this->assertGreaterThanOrEqual(3, $allSamples->count());
     }

@@ -1,5 +1,7 @@
 <?php
 
+namespace Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Capsule\Manager as Capsule;

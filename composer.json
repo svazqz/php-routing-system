@@ -18,8 +18,7 @@
             "core/drivers/DB.php",
             "core/drivers/Input.php",
             "core/drivers/Session.php",
-            "core/drivers/View.php",
-            "app/models/"
+            "core/drivers/View.php"
         ]
     },
     "require": {

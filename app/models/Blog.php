@@ -1,8 +1,11 @@
 <?php
 
+namespace Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Carbon\Carbon;
 
 class Blog extends Model
 {
@@ -73,19 +76,19 @@ class Blog extends Model
                 'title' => 'Getting Started with PHP Routing',
                 'content' => 'This is a comprehensive guide to understanding PHP routing systems. We\'ll explore how to create clean URLs and handle different HTTP methods effectively.',
                 'author' => 'John Doe',
-                'published_at' => now()->subDays(5)
+                'published_at' => Carbon::now()->subDays(5)
             ],
             [
                 'title' => 'Advanced Eloquent Techniques',
                 'content' => 'Learn advanced Eloquent ORM techniques including relationships, scopes, and query optimization. This post covers best practices for database interactions.',
                 'author' => 'Jane Smith',
-                'published_at' => now()->subDays(3)
+                'published_at' => Carbon::now()->subDays(3)
             ],
             [
                 'title' => 'Building RESTful APIs',
                 'content' => 'A complete guide to building RESTful APIs with PHP. We\'ll cover authentication, validation, and proper HTTP status codes.',
                 'author' => 'Mike Johnson',
-                'published_at' => now()->subDay()
+                'published_at' => Carbon::now()->subDay()
             ]
         ];
         
@@ -100,7 +103,7 @@ class Blog extends Model
     public function scopePublished($query)
     {
         return $query->whereNotNull('published_at')
-                    ->where('published_at', '<=', now());
+                    ->where('published_at', '<=', Carbon::now());
     }
 
     /**
@@ -108,6 +111,6 @@ class Blog extends Model
      */
     public function scopeRecent($query, $days = 30)
     {
-        return $query->where('published_at', '>=', now()->subDays($days));
+        return $query->where('published_at', '>=', Carbon::now()->subDays($days));
     }
 }
