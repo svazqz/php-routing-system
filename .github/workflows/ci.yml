@@ -1,0 +1,33 @@
+name: "Validation"
+on:
+  pull_request: {}
+  push:
+    branches:
+      - "master"
+  workflow_dispatch: {}
+permissions:
+  contents: "read"
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
+  cancel-in-progress: true
+jobs:
+  validate:
+    name: "PHP routing tests"
+    runs-on: "ubuntu-24.04"
+    timeout-minutes: 12
+    steps:
+      - name: "Check out source"
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: "Set up PHP"
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: "8.3"
+          coverage: "none"
+          extensions: "mbstring, intl, dom, pdo_sqlite, sqlite3, bcmath, gd, zip"
+          tools: "composer:v2"
+      - name: "Install Composer dependencies"
+        run: "composer install --no-interaction --prefer-dist --no-progress"
+      - name: "Run PHPUnit"
+        run: "vendor/bin/phpunit --no-coverage tests/Unit"

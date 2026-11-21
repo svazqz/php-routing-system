@@ -2,6 +2,8 @@
 
 A PHP MVC framework with configurable routes, controllers, views, and models. The repository includes a sample application and a public entry point.
 
+[![Validation](https://github.com/svazqz/php-routing-system/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/svazqz/php-routing-system/actions/workflows/ci.yml)
+
 [Quick start](#quick-start) · [Validation](#validation) · [Project layout](#project-layout) · [Reference](#reference) · [License](#license)
 
 ## Quick start
