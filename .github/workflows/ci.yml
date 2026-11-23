@@ -16,20 +16,16 @@ jobs:
   validate:
     name: "PHP routing tests"
     runs-on: "ubuntu-24.04"
-    timeout-minutes: 12
+    timeout-minutes: 18
     steps:
       - name: "Check out source"
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
-      - name: "Set up PHP"
-        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
-        with:
-          php-version: "8.3"
-          coverage: "none"
-          extensions: "mbstring, intl, dom, pdo_sqlite, sqlite3, bcmath, gd, zip"
-          tools: "composer:v2"
-      - name: "Install Composer dependencies"
-        run: "composer install --no-interaction --prefer-dist --no-progress"
-      - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit --no-coverage tests/Unit"
+      - name: "Build test container"
+        run: "docker build -f tests/Dockerfile -t php-router-tests ."
+      - name: "Run PHPUnit and real HTTP fixture tests"
+        shell: bash
+        run: |
+          set -o pipefail
+          docker run --rm --network none php-router-tests | tee -a "$GITHUB_STEP_SUMMARY"
