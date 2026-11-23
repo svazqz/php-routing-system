@@ -1,0 +1,12 @@
+**
+!app
+!app/**
+!core
+!core/**
+!public
+!public/**
+!tests
+!tests/**
+!composer.json
+!config.test.ini
+!phpunit.xml

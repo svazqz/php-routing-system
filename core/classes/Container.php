@@ -58,6 +58,7 @@ class Container {
                 } else {
                     throw new \Exception("Unresolvable dependency [$parameter] in class {$parameter->getDeclaringClass()->getName()}");
                 }
+                continue;
             }
 
             $name = $type->getName();
@@ -71,7 +72,7 @@ class Container {
                     $dependencies[] = $parameter->getDefaultValue();
                 } else {
                     $dependency = $this->build($parameter->getType()->getName());
-                    $this->set($name, $dependency);
+                    $this->set($name, static fn () => $dependency);
                     $dependencies[] = $dependency;
                 }
             }
