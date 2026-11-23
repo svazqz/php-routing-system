@@ -5,7 +5,7 @@ class Input {
   public const __GET__ = 1;
   
   public static function getVar($name = null, $default = null, $type = null) {
-    if($type != null){
+    if($type !== null){
       return ($type == self::__POST__) ? 
       ( (isset($_POST[$name])) ? $_POST[$name] : $default ) : 
       ( ($type == self::__GET__) ? ( isset($_GET[$name]) ? $_GET[$name] : $default ) : null );
@@ -34,7 +34,7 @@ class Input {
         $jsonData = file_get_contents('php://input');
         if (!empty($jsonData)) {
           $decodedData = json_decode($jsonData, true);
-          if (json_last_error() === JSON_ERROR_NONE) {
+          if (is_array($decodedData)) {
             $input = array_merge($input, $decodedData);
           }
         }

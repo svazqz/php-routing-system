@@ -18,6 +18,11 @@ final class Probe extends APIController
         return $this->jsonResponse(['created' => true], 201);
     }
 
+    public function update()
+    {
+        return ['input' => \Input::all()];
+    }
+
     public function readItem(string $id): array
     {
         return ['id' => (int) $id];
